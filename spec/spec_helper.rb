@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "address_formatter"
+require "address_composer"
 require "pry-byebug"
 
 RSpec.configure do |config|

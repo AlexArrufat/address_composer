@@ -1,15 +1,17 @@
-# AddressFormatter
+# Ruby AddressComposer
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/address_formatter`. To experiment with that code, run `bin/console` for an interactive prompt.
+Based on an amazing work of [OpenCage Data](https://github.com/OpenCageData/address-formatting/)
+who collected so many international formats of postal addresses, this is a Ruby implementation
+of that formatter.
 
-TODO: Delete this and the text above, and describe your gem
+The goal of this gem is processing the output of [ruby_postal](https://github.com/openvenues/ruby_postal)
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'address_formatter'
+gem 'address_composer'
 ```
 
 And then execute:
@@ -18,11 +20,31 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install address_formatter
+    $ gem install address_composer
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require "address_composer"
+
+address_components = {
+  "house_number" => 301,
+  "road" => "Hamilton Avenue",
+  "neighbourhood" => "Crescent Park",
+  "city" => "Palo Alto",
+  "postcode" => 94303,
+  "county" => "Santa Clara County",
+  "state" => "California",
+  "country" => "United States of America",
+  "country_code" => "US"
+}
+
+puts AddressComposer.compose(address_components)
+
+301 Hamilton Avenue
+Palo Alto, CA 94303
+United States of America
+```
 
 ## Development
 
@@ -32,4 +54,13 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/mirubiri@gmail.com/address_formatter.
+Bug reports and pull requests are welcome on GitHub at https://github.com/mirubiri@gmail.com/address_composer.
+
+
+
+Many thanks to these implementations:
+
+- [Perl](https://github.com/OpenCageData/perl-Geo-Address-Formatter)
+- [PHP](https://github.com/predicthq/address-formatter-php)
+- [Javascript](https://github.com/fragaria/address-formatter)
+- [Rust](https://github.com/CanalTP/address-formatter-rs)

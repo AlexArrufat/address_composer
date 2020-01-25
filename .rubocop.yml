@@ -5,7 +5,7 @@ AllCops:
     - "db/schema.rb"
   UseCache: false
 Rails:
-  Enabled: true
+  Enabled: false
 Rails/UnknownEnv:
   Environments:
     - beta
