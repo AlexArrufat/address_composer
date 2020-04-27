@@ -1,4 +1,4 @@
-# Ruby AddressComposer
+# Address Composer
 
 Based on an amazing work of [OpenCage Data](https://github.com/OpenCageData/address-formatting/)
 who collected so many international formats of postal addresses, this is a Ruby implementation
