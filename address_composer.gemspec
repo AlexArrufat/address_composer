@@ -9,7 +9,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["mirubiri@gmail.com"]
 
   gem.summary       = "Universal international address composer in Ruby"
-  gem.description   = "Address Formater formats address components using coutry's formatting templates"
+  gem.description   = "Address Composer formats address components using worldwide regions formatting templates"
   gem.homepage      = "https://github.com/mirubiri/address_composer"
   gem.license       = "MIT"
   gem.metadata      = {
