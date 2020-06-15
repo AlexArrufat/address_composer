@@ -3,11 +3,12 @@ require "YAML"
 require "mustache"
 
 class AddressComposer
-  Templates = YAML.load_file(File.join("address-formatting/conf/countries/worldwide.yaml"))
-  ComponentsList = Psych.load_stream(File.read("address-formatting/conf/components.yaml"))
+  GEM_ROOT = Gem::Specification.find_by_name("address_composer").gem_dir
+  Templates = YAML.load_file(File.join(GEM_ROOT, "address-formatting", "conf", "countries", "worldwide.yaml"))
+  ComponentsList = Psych.load_stream(File.read(File.join(GEM_ROOT,"address-formatting", "conf","components.yaml")))
   AllComponents = ComponentsList.map { |h| h["name"] } + ComponentsList.flat_map { |h| h["aliases"] }.compact
-  StateCodes = YAML.load_file(File.join("address-formatting/conf/state_codes.yaml"))
-  CountyCodes = YAML.load_file(File.open("address-formatting/conf/county_codes.yaml"))
+  StateCodes = YAML.load_file(File.join(GEM_ROOT, "address-formatting", "conf", "state_codes.yaml"))
+  CountyCodes = YAML.load_file(File.join(GEM_ROOT, "address-formatting", "conf", "county_codes.yaml"))
 
   class Template < Mustache
     def first
