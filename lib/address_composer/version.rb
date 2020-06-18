@@ -1,3 +1,3 @@
 class AddressComposer
-  VERSION = "0.1.2.pre".freeze
+  VERSION = "0.1.3.pre".freeze
 end
