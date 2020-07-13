@@ -1,5 +1,5 @@
 require "address_composer/version"
-require "YAML"
+require "yaml"
 require "mustache"
 
 class AddressComposer
