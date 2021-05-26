@@ -1,6 +1,7 @@
 require "address_composer/version"
 require "yaml"
 require "mustache"
+require "psych/scala_scanner"
 
 class AddressComposer
   GEM_ROOT = Gem::Specification.find_by_name("address_composer").gem_dir
