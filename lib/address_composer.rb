@@ -156,7 +156,7 @@ class AddressComposer
     unknown_components = components.keys - AllComponents
 
     components["attention"] = unknown_components.map do |unknown|
-      components[unknown]
+      components.delete(unknown)
     end.join(" ")
   end
 
