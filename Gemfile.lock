@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    address_composer (0.1.5.pre)
+    address_composer (0.1.6.pre)
       mustache (~> 1.1)
       psych (~> 4.0)
 
