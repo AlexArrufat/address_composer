@@ -27,7 +27,6 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_runtime_dependency "mustache", "~> 1.1"
-  gem.add_runtime_dependency "psych", "~> 4.0"
 
   gem.add_development_dependency "bundler", "~> 1.17"
   gem.add_development_dependency "pry", "~> 0.13"

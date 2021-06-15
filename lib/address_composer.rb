@@ -1,12 +1,10 @@
 require "address_composer/version"
 require "yaml"
 require "mustache"
-require "psych"
-require "psych/scala_scanner"
 
 class AddressComposer
   GEM_ROOT = Gem::Specification.find_by_name("address_composer").gem_dir
-  Templates = YAML.load_file(File.join(GEM_ROOT, "address-formatting", "conf", "countries", "worldwide.yaml"), aliases: true)
+  Templates = YAML.load_file(File.join(GEM_ROOT, "address-formatting", "conf", "countries", "worldwide.yaml"))
   ComponentsList = Psych.load_stream(File.read(File.join(GEM_ROOT,"address-formatting", "conf","components.yaml")))
   AllComponents = ComponentsList.map { |h| h["name"] } + ComponentsList.flat_map { |h| h["aliases"] }.compact
   StateCodes = YAML.load_file(File.join(GEM_ROOT, "address-formatting", "conf", "state_codes.yaml"))
