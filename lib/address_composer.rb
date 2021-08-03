@@ -25,7 +25,7 @@ class AddressComposer
   attr_accessor :components
 
   def initialize(components)
-    self.components = components
+    self.components = components.dup
   end
 
   def compose
