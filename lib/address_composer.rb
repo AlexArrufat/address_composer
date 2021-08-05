@@ -22,20 +22,19 @@ class AddressComposer
     new(components).compose
   end
 
-  attr_accessor :components
+  attr_reader :normalized_components
 
   def initialize(components)
-    self.components = components
+    @components = components
+    @normalized_components = normalize_components
   end
 
   def compose
-    normalize_components
-
-    if components["country_code"]
-      result = Template.render(template, components).squeeze("\n").lstrip.gsub(/\s*\n\s*/, "\n")
+    if @country_code
+      result = Template.render(template, normalized_components).squeeze("\n").lstrip.gsub(/\s*\n\s*/, "\n")
       result = post_format_replace(result)
     else
-      result = components.values.join(" ")
+      result = normalized_components.values.join(" ")
     end
 
     # Remove duplicated spaces
@@ -57,7 +56,7 @@ class AddressComposer
   private
 
   def template
-    @template ||= if (components.keys & %w[road postcode]).empty?
+    @template ||= if (normalized_components.keys & %w[road postcode]).empty?
                     formatting_rule["fallback_template"] || Templates["default"]["fallback_template"]
                   else
                     formatting_rule["address_template"]
@@ -68,14 +67,10 @@ class AddressComposer
     formatting_rules.last
   end
 
-  def country_code
-    @country_code || components["country_code"]
-  end
-
   def formatting_rules
     return @formatting_rules if @formatting_rules
 
-    initial_rule = Templates[country_code]
+    initial_rule = Templates[@country_code]
 
     if initial_rule
       fallback_rule = Templates[initial_rule["use_country"]]
@@ -87,17 +82,26 @@ class AddressComposer
   end
 
   def normalize_components
-    components.transform_values!(&:to_s)
-    components["country_code"] = components["country_code"].to_s.upcase
+    components = @components.transform_values(&:to_s)
 
-    fix_countries
-    fix_states
-    apply_formatting_rules
-    apply_aliases
-    normalize_aliases
+    components = fix_countries(components)
+    components = fix_states(components)
+    components = apply_formatting_rules(components)
+    components = apply_aliases(components)
+    components = normalize_aliases(components)
+
+    components
   end
 
-  def fix_countries
+  def fix_countries(components)
+    components["country_code"] = components["country_code"].to_s.upcase
+    components = fix_netherlands_countries(components)
+    @country_code = components["country_code"]
+
+    components
+  end
+
+  def fix_netherlands_countries(components)
     if components["country_code"] == "NL" && components["state"]
       if components["state"] == "Curaçao"
         components["country_code"] = "CW"
@@ -110,17 +114,21 @@ class AddressComposer
         components["country"] = "Aruba"
       end
     end
+
+    components
   end
 
-  def fix_states
+  def fix_states(components)
     if components["state"]&.match?(/^washington,? d\.?c\.?/i)
       components["state_code"] = "DC"
       components["state"] = "District of Columbia"
       components["city"] = "Washington"
     end
+
+    components
   end
 
-  def apply_formatting_rules
+  def apply_formatting_rules(components)
     formatting_rules.each do |rule|
       new_component = rule["add_component"]
       use_country = rule["use_country"]
@@ -137,16 +145,18 @@ class AddressComposer
       end
 
       if replaces
-        replace(replaces)
+        components = replace(replaces, components)
       end
 
       if new_component
         components.store(*new_component.split("="))
       end
     end
+
+    components
   end
 
-  def apply_aliases
+  def apply_aliases(components)
     components.keys.each do |key|
       component = ComponentsList.detect { |member| member["aliases"].to_a.include?(key) }
       components[component["name"]] ||= components[key] if component
@@ -157,9 +167,11 @@ class AddressComposer
     components["attention"] = unknown_components.map do |unknown|
       components.delete(unknown)
     end.join(" ")
+
+    components
   end
 
-  def normalize_aliases
+  def normalize_aliases(components)
     state_group = [components["state"], components["state_code"]].compact
     state_code, state = StateCodes[@use_country || components["country_code"].upcase]&.select { |k, v| ([k, v] & state_group).any? }.to_a.flatten
     components["state_code"] = state_code unless state_code.nil?
@@ -179,7 +191,7 @@ class AddressComposer
     end
 
     # Clean values with "", nil or []
-    self.components = components.reject { |_, v| v.nil? || v.empty? }
+    components = components.reject { |_, v| v.nil? || v.empty? }
 
     # If country is a number use the state as country
     if components["country"]&.match?(/[0-9]/)
@@ -188,9 +200,11 @@ class AddressComposer
 
     # Remove components with URL
     components.delete_if { |_, v| v.match?(URI::DEFAULT_PARSER.make_regexp) }
+
+    components
   end
 
-  def replace(replaces)
+  def replace(replaces, components)
     replaces.each do |rule|
       from, to = rule
       to = to.tr("$", "\\") # FIX: Solo numeros $1, $2...
@@ -204,6 +218,8 @@ class AddressComposer
         end
       end
     end
+
+    components
   end
 
   def post_format_replace(string)
