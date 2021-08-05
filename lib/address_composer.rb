@@ -22,19 +22,18 @@ class AddressComposer
     new(components).compose
   end
 
-  attr_reader :normalized_components
+  attr_reader :components
 
   def initialize(components)
-    @components = components
-    @normalized_components = normalize_components
+    @components = normalize(components)
   end
 
   def compose
     if @country_code
-      result = Template.render(template, normalized_components).squeeze("\n").lstrip.gsub(/\s*\n\s*/, "\n")
+      result = Template.render(template, components).squeeze("\n").lstrip.gsub(/\s*\n\s*/, "\n")
       result = post_format_replace(result)
     else
-      result = normalized_components.values.join(" ")
+      result = components.values.join(" ")
     end
 
     # Remove duplicated spaces
@@ -56,7 +55,7 @@ class AddressComposer
   private
 
   def template
-    @template ||= if (normalized_components.keys & %w[road postcode]).empty?
+    @template ||= if (components.keys & %w[road postcode]).empty?
                     formatting_rule["fallback_template"] || Templates["default"]["fallback_template"]
                   else
                     formatting_rule["address_template"]
@@ -81,16 +80,16 @@ class AddressComposer
     @formatting_rules = [initial_rule, fallback_rule].compact
   end
 
-  def normalize_components
-    components = @components.transform_values(&:to_s)
+  def normalize(components)
+    normalized_components = components.transform_values(&:to_s)
 
-    components = fix_countries(components)
-    components = fix_states(components)
-    components = apply_formatting_rules(components)
-    components = apply_aliases(components)
-    components = normalize_aliases(components)
+    normalized_components = fix_countries(normalized_components)
+    normalized_components = fix_states(normalized_components)
+    normalized_components = apply_formatting_rules(normalized_components)
+    normalized_components = apply_aliases(normalized_components)
+    normalized_components = normalize_aliases(normalized_components)
 
-    components
+    normalized_components
   end
 
   def fix_countries(components)
