@@ -28,9 +28,9 @@ Gem::Specification.new do |gem|
 
   gem.add_runtime_dependency "mustache", "~> 1.1"
 
-  gem.add_development_dependency "bundler", "~> 1.17"
-  gem.add_development_dependency "pry", "~> 0.13"
-  gem.add_development_dependency "pry-byebug", "~> 3.9"
+  gem.add_development_dependency "bundler", "~> 2.2"
+  gem.add_development_dependency "pry", "~> 0.14"
+  gem.add_development_dependency "pry-byebug", "~> 3.8"
   gem.add_development_dependency "rake", "~> 13.0"
-  gem.add_development_dependency "rspec", "~> 3.0"
+  gem.add_development_dependency "rspec", "~> 3.10"
 end
