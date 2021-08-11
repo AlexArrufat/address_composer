@@ -25,12 +25,12 @@ class AddressComposer
   attr_accessor :components
 
   def initialize(components)
-    self.components = components
+    self.components = components.dup
+
+    normalize_components
   end
 
   def compose
-    normalize_components
-
     if components["country_code"]
       result = Template.render(template, components).squeeze("\n").lstrip.gsub(/\s*\n\s*/, "\n")
       result = post_format_replace(result)
