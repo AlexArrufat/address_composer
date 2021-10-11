@@ -179,7 +179,7 @@ class AddressComposer
     end
 
     # If country is a number use the state as country
-    if components["country"]&.match?(/^\d+$/) && components["state"]
+    if components["state"] && components["country"]&.match?(/^\d+$/)
       components["country"] = components["state"]
     end
 
