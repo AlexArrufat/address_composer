@@ -178,13 +178,13 @@ class AddressComposer
       components["postcode"] = components["postcode"].split(",").first
     end
 
-    # Clean values with "", nil or []
-    self.components = components.reject { |_, v| v.nil? || v.empty? }
-
     # If country is a number use the state as country
     if components["country"]&.match?(/^\d+$/) && components["state"]
       components["country"] = components["state"]
     end
+
+    # Clean values with "", nil or []
+    self.components = components.reject { |_, v| v.nil? || v.empty? }
 
     # Remove components with URL
     components.delete_if { |_, v| v.match?(URI::DEFAULT_PARSER.make_regexp) }
