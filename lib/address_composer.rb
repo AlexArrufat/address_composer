@@ -182,7 +182,7 @@ class AddressComposer
     self.components = components.reject { |_, v| v.nil? || v.empty? }
 
     # If country is a number use the state as country
-    if components["country"]&.match?(/^\d+$/)
+    if components["country"]&.match?(/^\d+$/) && components["state"]
       components["country"] = components["state"]
     end
 
