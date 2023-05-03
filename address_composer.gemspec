@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "address_composer/version"
 
 Gem::Specification.new do |gem|
-  gem.name          = "address_composer"
+  gem.name          = "waysact-address_composer"
   gem.version       = AddressComposer::VERSION
   gem.authors       = ["Alejandro Arrufat"]
   gem.email         = ["mirubiri@gmail.com"]
