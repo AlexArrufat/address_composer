@@ -23,14 +23,14 @@ Gem::Specification.new do |gem|
     `git ls-files --recurse-submodules -z`.split("\x0").reject { |f| f.match(%r{^(spec)/}) }
   end
 
-  gem.required_ruby_version = ">= 2.4"
+  gem.required_ruby_version = ">= 2.5"
   gem.require_paths = ["lib"]
 
-  gem.add_runtime_dependency "mustache", "~> 1.1"
+  gem.add_runtime_dependency "mustache", ">= 1.1"
 
-  gem.add_development_dependency "bundler", "~> 2.2"
-  gem.add_development_dependency "pry", "~> 0.14"
-  gem.add_development_dependency "pry-byebug", "~> 3.8"
-  gem.add_development_dependency "rake", "~> 13.0"
-  gem.add_development_dependency "rspec", "~> 3.10"
+  gem.add_development_dependency "bundler", ">= 2.2"
+  gem.add_development_dependency "pry", ">= 0.14"
+  gem.add_development_dependency "pry-byebug", ">= 3.8"
+  gem.add_development_dependency "rake", ">= 13.0"
+  gem.add_development_dependency "rspec", ">= 3.10"
 end
