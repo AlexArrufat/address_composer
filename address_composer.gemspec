@@ -23,7 +23,7 @@ Gem::Specification.new do |gem|
     `git ls-files --recurse-submodules -z`.split("\x0").reject { |f| f.match(%r{^(spec)/}) }
   end
 
-  gem.required_ruby_version = ">= 2.5"
+  gem.required_ruby_version = ">= 2.6"
   gem.require_paths = ["lib"]
 
   gem.add_runtime_dependency "mustache", ">= 1.1"
