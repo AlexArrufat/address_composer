@@ -1,14 +1,15 @@
 require "address_composer/version"
 require "yaml"
 require "mustache"
+require "uri"
 
 class AddressComposer
   GEM_ROOT = Gem::Specification.find_by_name("address_composer").gem_dir
-  Templates = YAML.load_file(File.join(GEM_ROOT, "address-formatting", "conf", "countries", "worldwide.yaml"))
+  Templates = YAML.safe_load(IO.read(File.join(GEM_ROOT, "address-formatting", "conf", "countries", "worldwide.yaml")), aliases: true)
   ComponentsList = Psych.load_stream(File.read(File.join(GEM_ROOT,"address-formatting", "conf","components.yaml")))
   AllComponents = ComponentsList.map { |h| h["name"] } + ComponentsList.flat_map { |h| h["aliases"] }.compact
-  StateCodes = YAML.load_file(File.join(GEM_ROOT, "address-formatting", "conf", "state_codes.yaml"))
-  CountyCodes = YAML.load_file(File.join(GEM_ROOT, "address-formatting", "conf", "county_codes.yaml"))
+  StateCodes = YAML.safe_load(IO.read(File.join(GEM_ROOT, "address-formatting", "conf", "state_codes.yaml")), aliases: true)
+  CountyCodes = YAML.safe_load(IO.read(File.join(GEM_ROOT, "address-formatting", "conf", "county_codes.yaml")), aliases: true)
 
   class Template < Mustache
     def first
@@ -146,8 +147,25 @@ class AddressComposer
     end
   end
 
+  SMALL_DISTRICT_COUNTRIES = [
+    'BR',
+    'CR',
+    'ES',
+    'NI',
+    'PY',
+    'RO',
+    'TG',
+    'TM',
+    'XK',
+  ].freeze
+
   def apply_aliases
+    sdc = SMALL_DISTRICT_COUNTRIES.include?(components['country_code'])
+    district = components['district']
+    components['state_district'] = district if district && !sdc
+
     components.keys.each do |key|
+      next if !sdc && key == 'district'
       component = ComponentsList.detect { |member| member["aliases"].to_a.include?(key) }
       components[component["name"]] ||= components[key] if component
     end
@@ -159,16 +177,28 @@ class AddressComposer
     end.join(" ")
   end
 
+  def get_county_code(county, country_code)
+    # TODO what if county is actually the countyCode?
+    upcase_county = county.upcase
+    pair = CountyCodes[country_code]&.find do |_, value|
+      if value.respond_to?(:upcase)
+        value.upcase == upcase_county
+      else
+        value.values.any? { |val| val.upcase == upcase_county }
+      end
+    end
+    pair&.first
+  end
+
   def normalize_aliases
     state_group = [components["state"], components["state_code"]].compact
     state_code, state = StateCodes[@use_country || components["country_code"].upcase]&.select { |k, v| ([k, v] & state_group).any? }.to_a.flatten
     components["state_code"] = state_code unless state_code.nil?
     components["state"] = state unless state.nil?
 
-    county_group = [components["county"], components["county_code"]].compact
-    county_code, county = CountyCodes[components["country_code"].upcase]&.select { |k, v| ([k, v] & county_group).any? }.to_a.flatten
-    components["county"] = county unless county.nil?
-    components["county_code"] = county_code unless county_code.nil?
+    if components["county"] && !components["county_code"]
+      components["county_code"] = get_county_code(components["county"], components["country_code"])
+    end
 
     if components["postcode"]&.include?(";")
       components.delete("postcode")
@@ -187,7 +217,7 @@ class AddressComposer
     self.components = components.reject { |_, v| v.nil? || v.empty? }
 
     # Remove components with URL
-    components.delete_if { |_, v| v.match?(URI::DEFAULT_PARSER.make_regexp) }
+    components.delete_if { |_, v| v.respond_to?(:match?) && v.match?(URI::DEFAULT_PARSER.make_regexp) }
   end
 
   def replace(replaces)
