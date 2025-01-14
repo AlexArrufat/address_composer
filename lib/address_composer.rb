@@ -39,23 +39,27 @@ class AddressComposer
       result = components.values.join(" ")
     end
 
+    clean(result)
+  end
+
+  private
+
+  def clean(result)
     # Remove duplicated spaces
     result = result.squeeze(" ")
 
     # Remove duplicated returns and add one at the end
-    result = result.split("\n").uniq.join("\n") + "\n"
+    result = "#{result.split("\n").uniq.join("\n")}\n"
 
     # Remove spaces and commas before and after return
     result = result.gsub(/[,|\s]*\n[\s|,]*/, "\n")
 
     # Remove duplicated consecutive words
-    result = result.gsub(/([[:alnum:]]+,)\s+\1/, '\1') # remove duplicates
+    result = result.gsub(/([[:alnum:]]+),\s+\1/, '\1') # remove duplicates
 
     # Remove trailing non-word characters
     result.sub(/^[,|\s|-]*/, "")
   end
-
-  private
 
   def template
     @template ||= if (components.keys & %w[road postcode]).empty?

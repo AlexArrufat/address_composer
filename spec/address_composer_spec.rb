@@ -6,6 +6,8 @@ RSpec.describe AddressComposer do
   Dir["address-formatting/testcases/**/*.yaml"].each do |file|
     tests = Psych.load_stream(File.read(file))
     tests.each do |test|
+      next if test.nil?
+
       description = test["description"]
       components = test["components"]
       expected_formatted_address = test["expected"]
