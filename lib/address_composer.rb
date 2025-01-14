@@ -195,8 +195,14 @@ class AddressComposer
   end
 
   def normalize_aliases
-    state_group = [components["state"], components["state_code"]].compact
-    state_code, state = StateCodes[@use_country || components["country_code"].upcase]&.select { |k, v| ([k, v] & state_group).any? }.to_a.flatten
+    state_group = [components["state"]&.upcase, components["state_code"]&.upcase].compact
+    state_code, state = StateCodes[@use_country || components["country_code"].upcase]&.select do |k, v|
+      if v.is_a? Hash
+        ([k&.upcase, v.values.map(&:upcase)] & state_group).any?
+      else
+        ([k&.upcase, v&.upcase] & state_group).any?
+      end
+    end.to_a.flatten
     components["state_code"] = state_code unless state_code.nil?
     components["state"] = state unless state.nil?
 
