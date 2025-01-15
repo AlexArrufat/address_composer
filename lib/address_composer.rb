@@ -42,7 +42,7 @@ class AddressComposer
 
   def initialize(components)
     self.components = components.dup
-    @should_abbreviate = self.components.delete(:should_abbreviate) || false
+    @should_abbreviate = self.components.delete("should_abbreviate") || false
 
     normalize_components
   end

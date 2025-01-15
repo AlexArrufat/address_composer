@@ -10,7 +10,7 @@ RSpec.describe AddressComposer do
       next if test.nil?
 
       description = test["description"]
-      components = test["components"].merge(should_abbreviate: abbrev)
+      components = test["components"].merge("should_abbreviate" => abbrev)
       expected_formatted_address = test["expected"]
 
       describe "#{File.basename(file)} - #{description}" do
