@@ -69,6 +69,8 @@ class AddressComposer
     # Remove duplicated returns and add one at the end
     result = "#{result.split("\n").uniq.join("\n")}\n"
 
+    result.gsub!(/,\s*,/, ",") # multiple commas to one
+
     # Remove spaces and commas before and after return
     result = result.gsub(/[,|\s]*\n[\s|,]*/, "\n")
 
