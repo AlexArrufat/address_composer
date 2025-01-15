@@ -10,6 +10,21 @@ class AddressComposer
   AllComponents = ComponentsList.map { |h| h["name"] } + ComponentsList.flat_map { |h| h["aliases"] }.compact
   StateCodes = YAML.safe_load(IO.read(File.join(GEM_ROOT, "address-formatting", "conf", "state_codes.yaml")), aliases: true)
   CountyCodes = YAML.safe_load(IO.read(File.join(GEM_ROOT, "address-formatting", "conf", "county_codes.yaml")), aliases: true)
+  CountryToLanguage = begin
+                        c2l = YAML.safe_load(IO.read(File.join(GEM_ROOT, "address-formatting", "conf", "country2lang.yaml")), aliases: true)
+                        c2l.transform_values! do |v|
+                          v.split(",")
+                        end
+                        c2l.freeze
+                      end
+  Abbreviations = begin
+                    abbr = {}
+                    Dir.each_child(File.join(GEM_ROOT, "address-formatting", "conf", "abbreviations")) do |file|
+                      country_code, = file.split(".", 2)
+                      abbr[country_code] = YAML.safe_load(IO.read(File.join(GEM_ROOT, "address-formatting", "conf", "abbreviations", file)), aliases: true)
+                    end
+                    abbr.freeze
+                  end
 
   class Template < Mustache
     def first
@@ -27,6 +42,7 @@ class AddressComposer
 
   def initialize(components)
     self.components = components.dup
+    @should_abbreviate = self.components.delete(:should_abbreviate) || false
 
     normalize_components
   end
@@ -43,6 +59,8 @@ class AddressComposer
   end
 
   private
+
+  attr_reader :should_abbreviate
 
   def clean(result)
     # Remove duplicated spaces
@@ -100,6 +118,24 @@ class AddressComposer
     apply_formatting_rules
     apply_aliases
     normalize_aliases
+    abbreviate if should_abbreviate
+  end
+
+  def abbreviate
+    langs = CountryToLanguage[components["country_code"]]
+    return unless langs
+
+    langs.each do |lang|
+      next unless Abbreviations[lang]
+
+      Abbreviations[lang].each_key do |abbrev_component|
+        next unless components[abbrev_component]
+
+        Abbreviations[lang][abbrev_component].each do |k, v|
+          components[abbrev_component].sub!(/(^|\s)#{k}\b/, "\\1#{v}")
+        end
+      end
+    end
   end
 
   def fix_countries
