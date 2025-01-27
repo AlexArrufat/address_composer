@@ -46,6 +46,32 @@ Palo Alto, CA 94303
 United States of America
 ```
 
+You can also control whether the output should be abbreviated or not by passing `should_abbreviate`:
+
+```ruby
+require "address_composer"
+
+address_components = {
+  "house_number" => 301,
+  "road" => "Hamilton Avenue",
+  "neighbourhood" => "Crescent Park",
+  "city" => "Palo Alto",
+  "postcode" => 94303,
+  "county" => "Santa Clara County",
+  "state" => "California",
+  "country" => "United States of America",
+  "country_code" => "US",
+  "should_abbreviate" => true
+}
+
+puts AddressComposer.compose(address_components)
+
+301 Hamilton Ave
+Palo Alto, CA 94303
+United States of America
+
+```
+
 ## Development
 
 After checking out the repo, run `git submodule init` and `git submodule update` to fetch all the data from the submodule project and check out the mapped commit.
