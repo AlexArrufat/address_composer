@@ -1,21 +1,9 @@
 AllCops:
-  TargetRubyVersion: 2.4.5
+  TargetRubyVersion: 2.6
   Exclude:
     - "vendor/**/*"
     - "db/schema.rb"
   UseCache: false
-Rails:
-  Enabled: false
-Rails/UnknownEnv:
-  Environments:
-    - beta
-    - development
-    - ephemeral
-    - production
-    - qa
-    - sandbox
-    - simulator
-    - test
 Style/DateTime:
   Enabled: true
 Style/AsciiComments:
@@ -71,11 +59,11 @@ Naming/PredicateName:
   - is_
   - has_
   - have_
-  NamePrefixBlacklist:
+  ForbiddenPrefixes:
   - is_
   Exclude:
   - spec/**/*
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   # Parameter names may be equal to or greater than this value
   MinNameLength: 3
   AllowNamesEndingInNumbers: true
@@ -256,7 +244,7 @@ Style/WhenThen:
 Lint/EachWithObjectArgument:
   Description: Check for immutable argument given to each_with_object.
   Enabled: true
-Lint/HandleExceptions:
+Lint/SuppressedException:
   Description: Don't suppress exception.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#dont-hide-exceptions
   Enabled: false
@@ -269,10 +257,6 @@ Lint/LiteralAsCondition:
 Style/Lambda:
   Description: Use the new lambda literal syntax for single-line blocks.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#lambda-multi-line
-  Enabled: false
-Rails/HttpPositionalArguments:
-  Enabled: false
-Rails/SkipsModelValidations:
   Enabled: false
 Lint/AmbiguousBlockAssociation:
   Enabled: false
