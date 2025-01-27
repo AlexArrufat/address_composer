@@ -25,12 +25,14 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = ">= 2.6"
   gem.require_paths = ["lib"]
-
-  gem.add_runtime_dependency "mustache", ">= 1.1"
-
-  gem.add_development_dependency "bundler", ">= 2.2"
-  gem.add_development_dependency "pry", ">= 0.14"
-  gem.add_development_dependency "pry-byebug", ">= 3.8"
-  gem.add_development_dependency "rake", ">= 13.0"
-  gem.add_development_dependency "rspec", ">= 3.10"
+  gem.add_runtime_dependency "mustache"
+  
+  gem.add_development_dependency "bundler"
+  gem.add_development_dependency "rubocop"
+  gem.add_development_dependency "ostruct"
+  gem.add_development_dependency "reline"
+  gem.add_development_dependency "irb"
+  gem.add_development_dependency "fiddle"
+  gem.add_development_dependency "rake"
+  gem.add_development_dependency "rspec"
 end
