@@ -50,6 +50,7 @@ class AddressComposer
   def compose
     if components["country_code"]
       result = Template.render(template, components).squeeze("\n").lstrip.gsub(/\s*\n\s*/, "\n")
+      result = clean(result)
       result = post_format_replace(result)
     else
       result = components.values.join(" ")
